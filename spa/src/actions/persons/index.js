@@ -37,7 +37,8 @@ const fetchPersonFailed = error => {
 export const createPerson = data => {
     return async () => {
         try {
-            return await ContactsApiAxiosService.createPerson(data);
+            const response = await ContactsApiAxiosService.createPerson(data);
+            return response.data;
         } catch (error) {
             return Promise.reject(error);
         }

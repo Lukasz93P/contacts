@@ -3,18 +3,19 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 
-import PersonForm from './forms/PersonForm';
-import * as actions from '../../actions/persons/index';
+import PhoneForm from './forms/PhoneForm';
+import * as actions from '../../actions/phones/index';
 import {showMessage} from "../../utils/messages/showMessage";
 
-class CreatePerson extends Component {
+class CreatePhone extends Component {
     onFormSubmit = async values => {
         try {
-            const person = await this.props.dispatch(actions.createPerson(values));
+            console.log(values);
+            await this.props.dispatch(actions.createPhone({...values, person: this.props.match.params.personId}));
             this.props.history.push('/');
-            showMessage(`Person ${person.first_name} successfully created`, true);
+            showMessage('Phone number successfully added', true);
         } catch (error) {
-            showMessage('That person already exists', false);
+            showMessage('That phone number already exists', false);
         }
     };
 
@@ -22,9 +23,9 @@ class CreatePerson extends Component {
         const {onFormSubmit} = this;
         return (
             <div className="row justify-content-center p-5 m-5">
-                <h1 className="col-12">Create new person</h1>
+                <h1 className="col-12">Add new phone number</h1>
                 <div className="col-md-6 mt-3">
-                    <PersonForm onFormSubmit={onFormSubmit}/>
+                    <PhoneForm onFormSubmit={onFormSubmit}/>
                 </div>
                 <div className="w-100 text-center m-2 p-2">
                     <Link to="/">
@@ -36,4 +37,4 @@ class CreatePerson extends Component {
     }
 }
 
-export default connect()(withRouter(CreatePerson));
+export default connect()(withRouter(CreatePhone));

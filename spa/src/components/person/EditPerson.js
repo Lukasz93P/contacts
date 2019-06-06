@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import UserForm from './forms/PersonForm';
-import * as actions from '../../actions/persons/index';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
+
+import PersonForm from './forms/PersonForm';
+import * as actions from '../../actions/persons/index';
+import {showMessage} from "../../utils/messages/showMessage";
 
 class EditPerson extends Component {
     constructor() {
@@ -13,22 +15,20 @@ class EditPerson extends Component {
     }
 
     componentDidMount = async () => {
-        const id = this.props.match.params.id;
         try {
-            this.setState({person: await this.props.dispatch(actions.fetchPerson(id))});
+            this.setState({person: await this.props.dispatch(actions.fetchPerson(this.props.match.params.id))});
         } catch (error) {
+            showMessage('Requested persons doesn\'t seem to be existing')
         }
     };
 
     onFormSubmit = async values => {
-        // const {showToast} = this.props;
-        const id = this.props.match.params.id;
         try {
-            await this.props.dispatch(actions.updatePerson(id, values));
+            await this.props.dispatch(actions.updatePerson(this.props.match.params.id, values));
             this.props.history.push('/');
-            // showToast(`User ${user.name} successfully edited`, true);
+            showMessage(`Person successfully updated`);
         } catch (error) {
-            // showToast(error, false);
+            showMessage('Person with that first and second name already exists', false);
         }
     };
 
@@ -36,9 +36,14 @@ class EditPerson extends Component {
         const {onFormSubmit} = this;
         return (
             <div className="row justify-content-center p-5 m-5">
-                <h1 className="col-12">Edit user</h1>
-                <div className="col-md-6 mt-3">
-                    <UserForm onFormSubmit={onFormSubmit}/>
+                <h1 className="col-12">Edit person</h1>
+                <div className="col-md-6 mt-2">
+                    <PersonForm onFormSubmit={onFormSubmit}/>
+                </div>
+                <div className="w-100 text-center m-2 p-2">
+                    <Link to="/">
+                        <button className="btn btn-sm btn-secondary">Go back</button>
+                    </Link>
                 </div>
             </div>
         );

@@ -1,16 +1,15 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 
-import ContactPropertyCard from './ContactPropertyCard'
-import ContactsApiAxiosService from '../../services/axios/contactsApiService/ContactsApiAxiosService'
+import ContactPropertyCard from './ContactPropertyCard';
+import ContactsApiAxiosService from '../../services/axios/contactsApiService/ContactsApiAxiosService';
+import {showMessage} from "../../utils/messages/showMessage";
 
 class ContactCard extends Component {
 
     constructor() {
         super();
         this.state = {
-            typedEmail: '',
-            typedPhoneNumber: null,
             shouldBeRendered: true,
         }
     }
@@ -28,106 +27,71 @@ class ContactCard extends Component {
         try {
             await callback(id);
             this.props.contact[elementName] = elements.filter(element => element.id !== id);
+            showMessage('Element successfully deleted');
             this.forceUpdate();
         } catch (e) {
-
+            showMessage('Operation failed', false);
         }
-    };
-
-    addElement = async (callback, values, elementName) => {
-        try {
-            const response = await callback(values);
-            this.props.contact[elementName].push(response.data);
-            this.forceUpdate();
-        } catch (e) {
-
-        }
-    };
-
-    addEmail = () => {
-        this.addElement(ContactsApiAxiosService.addEmail, {
-            address: this.state.typedEmailValue,
-            person: this.props.contact.id
-        }, 'emails');
-    };
-
-    addPhone = () => {
-        this.addElement(ContactsApiAxiosService.addPhone, {
-            number: this.state.typedPhoneNumber,
-            person: this.props.contact.id
-        }, 'phones');
-    };
-
-    setTypedEmailValue = event => {
-        this.setState({...this.state, typedEmailValue: event.target.value});
-    };
-
-    setTypedPhoneNumberValue = event => {
-        this.setState({...this.state, typedPhoneNumber: event.target.value});
-        console.log(this.state)
     };
 
     deleteContact = async () => {
         try {
             await ContactsApiAxiosService.deleteContact(this.props.contact.id);
+            showMessage('Person successfully deleted');
             this.setState({...this.state, shouldBeRendered: false});
         } catch (e) {
-
+            showMessage('Person with assigned emails or phone numbers cannot be deleted', false);
         }
     };
 
     render() {
         const {first_name, second_name, emails, phones, id} = this.props.contact;
-        const shouldBeRendered = this.state.shouldBeRendered;
-        return (
-            <div className={shouldBeRendered ? 'card m-2 p-1 w-100' : ''}>
-                {
-                    shouldBeRendered ?
-                        <div>
-                            <div className="bg-light-blue dib br3 pa3 ma2  dim bw2 shadow-3">
-                                <div className="tc">
-                                    <h2>{first_name}</h2>
-                                    <p>{second_name}</p>
-                                    <Link to={`/edit/${id}`}>
-                                        <button className="btn btn-primary">Edit contact</button>
-                                    </Link>
-                                    <div>
-                                        <div>
-                                            <p>Emails:</p>
-                                            {emails.length ? emails.map((email) => <ContactPropertyCard key={email.id}
-                                                                                                        id={email.id}
-                                                                                                        value={email.address}
-                                                                                                        deleteHandler={this.deleteEmail}/>) :
 
-                                                <p className="mb-2">Not added yet</p>}
-                                            <input type="text" onChange={this.setTypedEmailValue}/>
-                                            <button className="btn btn-sm btn-outline-primary"
-                                                    onClick={this.addEmail}>Save
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <p>Phone numbers:</p>
-                                            {phones.length ? phones.map((phone) => <ContactPropertyCard key={phone.id}
-                                                                                                        id={phone.id}
-                                                                                                        value={phone.number}
-                                                                                                        deleteHandler={this.deletePhone}/>) :
-                                                <p className="mb-2">Not added yet</p>}
-                                            <input type="text" onChange={this.setTypedPhoneNumberValue}/>
-                                            <button className="btn btn-sm btn-outline-primary"
-                                                    onClick={this.addPhone}>Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <button className="btn btn-danger" onClick={this.deleteContact}>Delete contact
-                                        </button>
-                                    </div>
-                                    <br/>
+        return (
+            this.state.shouldBeRendered ?
+                <div className='card m-3 p-3 w-100'>
+                    <div>
+                        <div className="row p-2">
+                            <button className="btn btn-danger btn-sm m-2"
+                                    onClick={this.deleteContact}>Delete
+                            </button>
+                            <Link to={`/edit/${id}`}>
+                                <button className="btn btn-primary btn-sm m-2">Edit</button>
+                            </Link>
+                            <Link to={`/add/email/${id}`}>
+                                <button className="btn btn-primary btn-sm m-2">Add new email</button>
+                            </Link>
+                            <Link to={`/add/phone/${id}`}>
+                                <button className="btn btn-primary btn-sm m-2">Add new phone number</button>
+                            </Link>
+                        </div>
+                        <div className="tc">
+                            <p className="display-4">First name: {first_name}</p>
+                            <p className="display-4">Second name: {second_name}</p>
+                            <div>
+                                <div className="m-2 p-2">
+                                    <span>Emails:</span>
+                                    {emails.length ? emails.map((email) => <ContactPropertyCard key={email.id}
+                                                                                                id={email.id}
+                                                                                                value={email.address}
+                                                                                                deleteHandler={this.deleteEmail}/>) :
+
+                                        <span> not added yet</span>}
+                                </div>
+                                <div className="m-2 p-2">
+                                    <span>Phone numbers:</span>
+                                    {phones.length ? phones.map((phone) => <ContactPropertyCard key={phone.id}
+                                                                                                id={phone.id}
+                                                                                                value={phone.number}
+                                                                                                deleteHandler={this.deletePhone}/>) :
+                                        <span> not added yet</span>}
                                 </div>
                             </div>
-                        </div> : <div></div>
-                }
-            </div>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+                : ''
         );
     }
 }

@@ -12,7 +12,7 @@ class RepoComparisionAxiosService {
 
     init = () => {
         this.service = axios.create({
-            baseURL: 'http//localhost:8000/api',
+            baseURL: CONTACTS_API_URL,
         });
     };
 

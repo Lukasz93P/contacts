@@ -4,18 +4,18 @@ import {
 
 const initialState = {
     data: null,
-    errors: [],
+    error: false,
     loaded: false,
 };
 
 export const PersonReducer = (state = initialState, action) => {
     switch (action.type) {
         case FETCH_PERSON_INIT:
-            return Object.assign({}, state, {errors: [], data: null});
+            return Object.assign({}, state, {error: false, data: null});
         case FETCH_PERSON_SUCCESS:
-            return Object.assign({}, state, {data: action.payload, loaded: true, errors: []});
+            return Object.assign({}, state, {data: action.payload, loaded: true, error: false});
         case FETCH_PERSON_FAILURE:
-            return Object.assign({}, state, {errors: action.payload, data: null, loaded: true});
+            return Object.assign({}, state, {error: action.payload, data: null, loaded: true});
         default:
             return state;
     }
