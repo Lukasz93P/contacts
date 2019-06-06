@@ -13,6 +13,6 @@ export const email = value =>
         : undefined;
 
 const minDigits = min => value =>
-    value && value.toString().length > min ? `Must be have ${min} digits or more` : undefined;
+    value && value.toString().length < min ? `Must be have ${min} digits or more` : undefined;
 
 export const minimumDigits7 = minDigits(7);
